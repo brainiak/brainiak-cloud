@@ -83,6 +83,7 @@ class Server:
         process = mp.Process(target=Launcher, args=(
             self.experimentOpts['queue_work_name'],
             self.experimentOpts['queue_result_name'],
+            self.experimentOpts.get('experiment_data'),
             ))
         process.start()
         return 'Successfully started!', 200
