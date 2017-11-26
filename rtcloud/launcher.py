@@ -1,6 +1,8 @@
+import io
 import pickle
-import sys
 
+import nibabel
+import nilearn.image
 import numpy as np
 import pika
 
@@ -22,7 +24,6 @@ def predict(sample, models, mask):
     test_display[test_classes == "face"] = 0.5
     test_display[test_classes == "house"] = 1
     test_display[test_classes == None] = np.nan
-    return test_display
 
 
 class Launcher:
@@ -31,16 +32,20 @@ class Launcher:
         self.channel = self.rmq.channel()
         self.channel.queue_declare(queue=work_queue)
         self.channel.queue_declare(queue=result_queue)
-        mask = experiment_data["mask"]
         models = experiment_data["models"]
+        mask_bytes = experiment_data["mask"]
+        mask_img = nibabel.load(io.BytesIO(mask_bytes))
+        mask = mask_img.get_data().astype(bool)
 
         def callback(channel, method, properties, body):
             print('Received message!')
-            result = predict(body, models, mask)
+            test_display = predict(body, models, mask)
+            test_img = nilearn.image.new_img_like(mask_img, test_display)
             self.channel.basic_publish(
                     exchange='',
                     routing_key=result_queue,
-                    body=result)
+                    body=pickle.dumps(test_img),
+            )
             return
 
         self.channel.basic_consume(callback, queue=work_queue, no_ack=True)
