@@ -144,7 +144,7 @@ def serve(conf):
     signal.signal(signal.SIGINT, signal_handler)
 
     # Assume rabbitmq-server is installed
-    rmq = ['sudo', 'rabbitmqctl', 'start']
+    rmq = ['sudo', 'service', 'rabbitmq-server', 'start']
 
     subprocess.Popen(rmq)
     server = Server(opts)
