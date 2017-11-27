@@ -33,8 +33,7 @@ class Launcher:
         self.channel.queue_declare(queue=work_queue)
         self.channel.queue_declare(queue=result_queue)
         models = experiment_data["models"]
-        mask_bytes = experiment_data["mask"]
-        mask_img = nibabel.load(mask_bytes)
+        mask_img = experiment_data["mask"]
         mask = mask_img.get_data().astype(bool)
 
         def callback(channel, method, properties, body):
