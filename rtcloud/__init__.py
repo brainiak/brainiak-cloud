@@ -15,7 +15,7 @@ from .ui import (
 
 from .experiments import (
     Experiment,
-    FCMAExperiment,
+    # FCMAExperiment,
     SearchlightExperiment
 )
 
