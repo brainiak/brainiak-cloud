@@ -155,7 +155,7 @@ class Client():
             def callback_rmq(channel, method, properties, body):
                 display_queue.put({
                     'src': 'output',
-                    'data': body
+                    'data': pickle.loads(body)
                 })
                 callback(body)
 
