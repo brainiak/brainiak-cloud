@@ -33,13 +33,13 @@ class Launcher:
         self.channel.queue_declare(queue=work_queue)
         self.channel.queue_declare(queue=result_queue)
         models = experiment_data["models"]
-        mask_img = experiment_data["mask"]
-        mask = mask_img.get_data().astype(bool)
+        mask = experiment_data["mask_data"]
+        affine = experiment_data["mask_affine"]
 
         def callback(channel, method, properties, body):
             print('Received message!')
             test_display = predict(body, models, mask)
-            test_img = nilearn.image.new_img_like(mask_img, test_display)
+            test_img = nibabel.nifti1.Nifti1Image(test_display, affine)
             self.channel.basic_publish(
                     exchange='',
                     routing_key=result_queue,
