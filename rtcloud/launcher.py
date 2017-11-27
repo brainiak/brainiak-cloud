@@ -1,8 +1,6 @@
-import io
 import pickle
 
 import nibabel
-import nilearn.image
 import numpy as np
 import pika
 
@@ -38,7 +36,7 @@ class Launcher:
 
         def callback(channel, method, properties, body):
             print('Received message!')
-            test_display = predict(body, models, mask)
+            test_display = predict(pickle.loads(body), models, mask)
             test_img = nibabel.nifti1.Nifti1Image(test_display, affine)
             self.channel.basic_publish(
                     exchange='',

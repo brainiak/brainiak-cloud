@@ -3,6 +3,7 @@ import pickle
 import time
 import pathlib
 
+import nibabel
 import pika
 import requests
 from binaryornot.check import is_binary
@@ -109,7 +110,7 @@ class Client():
                     channel.basic_publish(
                         exchange='',
                         routing_key=queue_work_name,
-                        body=open_path(path).read()
+                        body=pickle.dumps(nibabel.load(path).get_data())
                     )
                     display_queue.put({
                         'src': 'input',
