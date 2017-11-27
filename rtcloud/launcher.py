@@ -22,6 +22,7 @@ def predict(sample, models, mask):
     test_display[test_classes == "face"] = 0.5
     test_display[test_classes == "house"] = 1
     test_display[test_classes == None] = np.nan
+    return test_display
 
 
 class Launcher:
