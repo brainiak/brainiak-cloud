@@ -1,4 +1,5 @@
 import os
+import pickle
 import time
 import pathlib
 
@@ -71,7 +72,7 @@ class Client():
 
     def start(self):
         req = requests.post(os.path.join(self.server_address, 'start'),
-                            data=self.conf)
+                            data=pickle.dumps(self.conf))
 
         if req.status_code == 200:
             self.connected = True

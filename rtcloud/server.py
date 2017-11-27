@@ -1,4 +1,5 @@
 import os
+import pickle
 import sys
 import json
 import signal
@@ -74,8 +75,8 @@ class Server:
         return 'Hello, world!'
 
     def start(self):
-        print(request.form)
-        self.experimentOpts = request.form
+        # print(request.form)
+        self.experimentOpts = pickle.loads(request.get_data())
         self.logger.info('Starting experiment %s' %
                          self.experimentOpts['name'])
 
