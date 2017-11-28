@@ -35,7 +35,8 @@ class Publisher(object):
             routing_key=ROUTING_KEY,
             exchange=EXCHANGE,
             exchange_type=EXCHANGE_TYPE,
-            publish_interval=PUBLISH_INTERVAL
+            publish_interval=PUBLISH_INTERVAL,
+            schedule=False
     ):
         """Setup the example publisher object, passing in the URL we will use
         to connect to RabbitMQ.
@@ -58,6 +59,9 @@ class Publisher(object):
         self._exchange = exchange
         self._exchange_type = exchange_type
         self._publish_interval = publish_interval
+        self._schedule = schedule
+
+        self._test_msg = 'Hello, world!'
 
     def connect(self):
         """This method connects to RabbitMQ, returning the connection handle.
@@ -244,7 +248,8 @@ class Publisher(object):
         self.enable_delivery_confirmations()
 
         # TODO: should have some status flag for connection ready
-        self.schedule_next_message()
+        if self._schedule:
+            self.schedule_next_message()
 
     def enable_delivery_confirmations(self):
         """Send the Confirm.Select RPC method to RabbitMQ to enable delivery
@@ -299,7 +304,7 @@ class Publisher(object):
         self._connection.add_timeout(self._publish_interval / 1000.0,
                                      self.publish_message)
 
-    def publish_message(self):
+    def publish_message(self, body=None):
         """If the class is not stopping, publish a message to RabbitMQ,
         appending a list of deliveries with the message number that was sent.
         This list will be used to check for delivery confirmations in the
@@ -315,16 +320,25 @@ class Publisher(object):
         if self._stopping:
             return
 
-        message = {u'مفتاح': u' قيمة',
-                   u'键': u'值',
-                   u'キー': u'値'}
-        properties = pika.BasicProperties(app_id='example-publisher',
-                                          content_type='application/json',
-                                          headers=message)
+        if body is None:
+            message = {u'مفتاح': u' قيمة',
+                       u'键': u'值',
+                       u'キー': u'値'}
+            properties = pika.BasicProperties(app_id='example-publisher',
+                                              content_type='application/json',
+                                              headers=message)
+            body = json.dumps(message, ensure_ascii=False)
 
-        self._channel.basic_publish(self._exchange, self._routing_key,
-                                    json.dumps(message, ensure_ascii=False),
-                                    properties)
+        else:
+            properties = pika.BasicProperties()
+
+        self._channel.basic_publish(
+            exchange=self._exchange,
+            routing_key=self._routing_key,
+            body=body,
+            properties=properties
+        )
+
         self._message_number += 1
         self._deliveries.append(self._message_number)
         LOGGER.info('Published message # %i', self._message_number)
@@ -375,7 +389,8 @@ def main():
     # Connect to localhost:5672 as guest with the password guest and virtual
     # host "/" (%2F)
     example = Publisher(
-        'amqp://guest:guest@localhost:5672/%2F?connection_attempts=3&heartbeat_interval=3600')
+        'amqp://guest:guest@localhost:5672/%2F?connection_attempts=3&heartbeat_interval=3600',
+        schedule=True)
     try:
         example.run()
     except KeyboardInterrupt:
