@@ -1,7 +1,8 @@
 import os
-import pickle
 import time
+import pickle
 import pathlib
+import logging
 
 import nibabel
 import pika
@@ -10,6 +11,7 @@ from binaryornot.check import is_binary
 from pathos.helpers import mp
 
 from .ui import display_input, display_output
+from .publisher import Publisher
 
 
 def get_paths(input_dir='.', extensions=['.nii.gz']):
@@ -52,6 +54,9 @@ class Client():
         self.server_address = os.path.join(self.server_address, http_endpoint)
 
         self.rmq_port = rmq_port
+        self.amqp = 'amqp://guest:guest@%s:%d/%%2F' % \
+                (self.server_ip, self.rmq_port)
+
         self.conf = conf
         self.connected = False
         self.name = 'rtcloud'
@@ -100,19 +105,21 @@ class Client():
     def queue(self, input_dir='.', tr=2000, loop=True, watch=False):
         assert self.connected, 'Not connected to server!'
 
-        def queue_helper(display_queue, server_ip, queue_work_name, input_dir, tr, loop):
-            # NOTE: Each process needs its own set of file descriptors
-            channel = get_channel(server_ip, queue_work_name)
+        # NOTE: Rely on closures to pass arguments, yes it's bad.
+        def publish_func(publish_message):
+            print('in publish_func')
+            #  channel = get_channel(self.server_ip, self.queue_work_name)
             paths = get_paths(input_dir, self.conf['extensions'])
-
             while True:
                 for path in paths:
-                    channel.basic_publish(
-                        exchange='',
-                        routing_key=queue_work_name,
-                        body=pickle.dumps(nibabel.load(path).get_data())
-                    )
-                    display_queue.put({
+                    #  channel.basic_publish(
+                        #  exchange='',
+                        #  routing_key=self.queue_work_name,
+                        #  body=pickle.dumps(nibabel.load(path).get_data())
+                    #  )
+                    publish_message(pickle.dumps(
+                        nibabel.load(path).get_data()))
+                    self.display_queue.put({
                         'src': 'input',
                         'data': path
                     })
@@ -120,15 +127,15 @@ class Client():
                 if not loop:
                     break
 
-        process = mp.Process(target=queue_helper, args=(
-            self.display_queue,
-            self.server_ip,
-            self.queue_work_name,
-            input_dir,
-            tr,
-            loop,
-        ))
+        def queue_helper():
+            print('in queue_helper')
 
+            logging.basicConfig(level=logging.DEBUG)
+            # NOTE: Each process needs its own set of file descriptors
+            publisher = Publisher(self.amqp, publish_func=publish_func)
+            publisher.run()
+
+        process = mp.Process(target=queue_helper)
         process.start()
 
         return

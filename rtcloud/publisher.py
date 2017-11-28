@@ -36,7 +36,7 @@ class Publisher(object):
             exchange=EXCHANGE,
             exchange_type=EXCHANGE_TYPE,
             publish_interval=PUBLISH_INTERVAL,
-            schedule=False
+            publish_func=None
     ):
         """Setup the example publisher object, passing in the URL we will use
         to connect to RabbitMQ.
@@ -59,7 +59,7 @@ class Publisher(object):
         self._exchange = exchange
         self._exchange_type = exchange_type
         self._publish_interval = publish_interval
-        self._schedule = schedule
+        self._publish_func = publish_func
 
         self._test_msg = 'Hello, world!'
 
@@ -247,9 +247,12 @@ class Publisher(object):
         LOGGER.info('Issuing consumer related RPC commands')
         self.enable_delivery_confirmations()
 
-        # TODO: should have some status flag for connection ready
-        if self._schedule:
+        print('starting to publish')
+
+        if self._publish_func is None:
             self.schedule_next_message()
+        else:
+            self._publish_func(self.publish_message)
 
     def enable_delivery_confirmations(self):
         """Send the Confirm.Select RPC method to RabbitMQ to enable delivery
@@ -302,9 +305,25 @@ class Publisher(object):
         LOGGER.info('Scheduling next message for %0.1f seconds',
                     self._publish_interval / 1000.0)
         self._connection.add_timeout(self._publish_interval / 1000.0,
-                                     self.publish_message)
+                                     self.publish_test)
 
-    def publish_message(self, body=None):
+    def publish_test(self):
+        message = {u'مفتاح': u' قيمة',
+                   u'键': u'值',
+                   u'キー': u'値'}
+        properties = pika.BasicProperties(app_id='example-publisher',
+                                          content_type='application/json',
+                                          headers=message)
+        body = json.dumps(message, ensure_ascii=False)
+
+        self.publish_message(
+            body=body,
+            properties=properties
+        )
+
+        self.schedule_next_message()
+
+    def publish_message(self, body, properties=pika.BasicProperties()):
         """If the class is not stopping, publish a message to RabbitMQ,
         appending a list of deliveries with the message number that was sent.
         This list will be used to check for delivery confirmations in the
@@ -320,18 +339,6 @@ class Publisher(object):
         if self._stopping:
             return
 
-        if body is None:
-            message = {u'مفتاح': u' قيمة',
-                       u'键': u'值',
-                       u'キー': u'値'}
-            properties = pika.BasicProperties(app_id='example-publisher',
-                                              content_type='application/json',
-                                              headers=message)
-            body = json.dumps(message, ensure_ascii=False)
-
-        else:
-            properties = pika.BasicProperties()
-
         self._channel.basic_publish(
             exchange=self._exchange,
             routing_key=self._routing_key,
@@ -342,7 +349,6 @@ class Publisher(object):
         self._message_number += 1
         self._deliveries.append(self._message_number)
         LOGGER.info('Published message # %i', self._message_number)
-        self.schedule_next_message()
 
     def close_channel(self):
         """Invoke this command to close the channel with RabbitMQ by sending
@@ -389,8 +395,7 @@ def main():
     # Connect to localhost:5672 as guest with the password guest and virtual
     # host "/" (%2F)
     example = Publisher(
-        'amqp://guest:guest@localhost:5672/%2F?connection_attempts=3&heartbeat_interval=3600',
-        schedule=True)
+        'amqp://guest:guest@localhost:5672/%2F?connection_attempts=3&heartbeat_interval=3600')
     try:
         example.run()
     except KeyboardInterrupt:
