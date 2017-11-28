@@ -26,6 +26,12 @@ aws configure
 ./bin/cloud/launch
 ```
 
+## MATLAB
+Make sure MATLAB\_R2017b is installed.
+```bash
+export MATLAB_ROOT=[MATLAB_ROOT]
+```
+
 ## TODO
 ```
 echo fs.inotify.max_user_watches=524288 | sudo tee -a /etc/sysctl.conf && sudo sysctl -p

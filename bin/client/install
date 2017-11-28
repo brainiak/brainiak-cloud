@@ -54,6 +54,14 @@ export CPPFLAGS="-I/usr/local/opt/llvm/include $CPPFLAGS"
 pip install -e .
 env ARCHFLAGS="-arch x86_64" pip install -e '.[demo]'
 
+if [ -z "$MATLAB_ROOT" ]; then
+   echo "MATLAB_ROOT unset, skipping MATLAB install"
+else
+   pushd $MATLAB_ROOT/extern/engines/python
+   python setup.py install
+   popd
+fi
+
 # Enable widgets
 # jupyter contrib nbextension install
 # jupyter nbextension enable --py widgetsnbextension
