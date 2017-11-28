@@ -4,6 +4,7 @@ import sys
 import json
 import signal
 import subprocess
+import platform
 
 from pathlib import Path
 
@@ -122,13 +123,9 @@ class Server:
 def signal_handler(signal, frame):
     print('You pressed Ctrl-C!')
 
-    # def kill(name):
-    #     subprocess.call(
-    #             "kill $(ps aux | grep %s | grep -v grep | "
-    #             "awk '{ print $2 }') 2> /dev/null" % name, shell=True)
-    #     #  subprocess.check_call(['killall', 'rabbitmq-server'])
-    # kill('rabbitmq-server')
     rmq_stop = ['sudo', 'rabbitmqctl', 'stop']
+    if platform.system() == 'Darwin':
+        rmq_stop = ['brew', 'services', 'stop', 'rabbitmq']
     subprocess.call(rmq_stop)
     sys.exit(0)
 
@@ -146,6 +143,8 @@ def serve(conf):
 
     # Assume rabbitmq-server is installed
     rmq = ['sudo', 'service', 'rabbitmq-server', 'start']
+    if platform.system() == 'Darwin':
+        rmq = ['brew', 'services', 'start', 'rabbitmq']
 
     subprocess.Popen(rmq)
     server = Server(opts)
