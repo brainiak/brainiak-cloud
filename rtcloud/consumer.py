@@ -26,7 +26,14 @@ class Consumer(object):
     QUEUE = 'text'
     ROUTING_KEY = 'example.text'
 
-    def __init__(self, amqp_url):
+    def __init__(
+            self,
+            amqp_url,
+            queue=QUEUE,
+            routing_key=ROUTING_KEY,
+            exchange=EXCHANGE,
+            exchange_type=EXCHANGE_TYPE
+    ):
         """Create a new instance of the consumer class, passing in the AMQP
         URL used to connect to RabbitMQ.
 
@@ -38,6 +45,11 @@ class Consumer(object):
         self._closing = False
         self._consumer_tag = None
         self._url = amqp_url
+
+        self._queue = queue
+        self._routing_key = routing_key
+        self._exchange = exchange
+        self._exchange_type = exchange_type
 
     def connect(self):
         """This method connects to RabbitMQ, returning the connection handle.
@@ -127,7 +139,7 @@ class Consumer(object):
         LOGGER.info('Channel opened')
         self._channel = channel
         self.add_on_channel_close_callback()
-        self.setup_exchange(self.EXCHANGE)
+        self.setup_exchange(self._exchange)
 
     def add_on_channel_close_callback(self):
         """This method tells pika to call the on_channel_closed method if
@@ -164,7 +176,7 @@ class Consumer(object):
         LOGGER.info('Declaring exchange %s', exchange_name)
         self._channel.exchange_declare(self.on_exchange_declareok,
                                        exchange_name,
-                                       self.EXCHANGE_TYPE)
+                                       self._exchange_type)
 
     def on_exchange_declareok(self, unused_frame):
         """Invoked by pika when RabbitMQ has finished the Exchange.Declare RPC
@@ -174,7 +186,7 @@ class Consumer(object):
 
         """
         LOGGER.info('Exchange declared')
-        self.setup_queue(self.QUEUE)
+        self.setup_queue(self._queue)
 
     def setup_queue(self, queue_name):
         """Setup the queue on RabbitMQ by invoking the Queue.Declare RPC
@@ -198,9 +210,9 @@ class Consumer(object):
 
         """
         LOGGER.info('Binding %s to %s with %s',
-                    self.EXCHANGE, self.QUEUE, self.ROUTING_KEY)
-        self._channel.queue_bind(self.on_bindok, self.QUEUE,
-                                 self.EXCHANGE, self.ROUTING_KEY)
+                    self._exchange, self._queue, self._routing_key)
+        self._channel.queue_bind(self.on_bindok, self._queue,
+                                 self._exchange, self._routing_key)
 
     def on_bindok(self, unused_frame):
         """Invoked by pika when the Queue.Bind method has completed. At this
@@ -226,7 +238,7 @@ class Consumer(object):
         LOGGER.info('Issuing consumer related RPC commands')
         self.add_on_cancel_callback()
         self._consumer_tag = self._channel.basic_consume(self.on_message,
-                                                         self.QUEUE)
+                                                         self._queue)
 
     def add_on_cancel_callback(self):
         """Add a callback that will be invoked if RabbitMQ cancels the consumer
