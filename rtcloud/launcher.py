@@ -35,8 +35,12 @@ class Launcher:
         mask = experiment_data["mask_data"]
         affine = experiment_data["mask_affine"]
 
+        self.counter = 0
+
         def callback(channel, method, properties, body):
-            print('Received message!')
+            print('Received message %d!' % self.counter)
+            self.counter += 1
+
             test_display = predict(pickle.loads(body), models, mask)
             test_img = nibabel.nifti1.Nifti1Image(test_display, affine)
             self.channel.basic_publish(

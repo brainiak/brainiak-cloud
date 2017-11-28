@@ -7,6 +7,8 @@ A work in progress. More documentation to come.
 from .server import Server
 from .client import Client
 from .launcher import Launcher
+from .publisher import Publisher
+from .consumer import Consumer
 
 from .ui import (
     display_input,
@@ -28,6 +30,8 @@ __all__ = [
     'Server',
     'Client',
     'Launcher',
+    'Publisher',
+    'Consumer',
 
     'display_input',
     'display_output',
