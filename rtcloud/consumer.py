@@ -32,7 +32,8 @@ class Consumer(object):
             queue=QUEUE,
             routing_key=ROUTING_KEY,
             exchange=EXCHANGE,
-            exchange_type=EXCHANGE_TYPE
+            exchange_type=EXCHANGE_TYPE,
+            callback=lambda *args: None
     ):
         """Create a new instance of the consumer class, passing in the AMQP
         URL used to connect to RabbitMQ.
@@ -50,6 +51,7 @@ class Consumer(object):
         self._routing_key = routing_key
         self._exchange = exchange
         self._exchange_type = exchange_type
+        self._callback = callback
 
     def connect(self):
         """This method connects to RabbitMQ, returning the connection handle.
@@ -275,9 +277,10 @@ class Consumer(object):
         :param str|unicode body: The message body
 
         """
-        LOGGER.info('Received message # %s from %s: %s',
-                    basic_deliver.delivery_tag, properties.app_id, body)
+        LOGGER.info('Received message # %s from %s',
+                    basic_deliver.delivery_tag, properties.app_id)
         self.acknowledge_message(basic_deliver.delivery_tag)
+        self._callback(unused_channel, basic_deliver, properties, body)
 
     def acknowledge_message(self, delivery_tag):
         """Acknowledge the message delivery from RabbitMQ by sending a
@@ -351,7 +354,13 @@ class Consumer(object):
 
 def main():
     logging.basicConfig(level=logging.INFO, format=LOG_FORMAT)
-    example = Consumer('amqp://guest:guest@localhost:5672/%2F')
+
+    def test(channel, method, properties, body):
+        print('Received message!')
+
+    example = Consumer('amqp://guest:guest@localhost:5672/%2F'
+                       #  )
+                       , callback=test)
     try:
         example.run()
     except KeyboardInterrupt:

@@ -3,6 +3,7 @@
 import logging
 import pika
 import json
+import time
 
 LOG_FORMAT = ('%(levelname) -10s %(asctime)s %(name) -30s %(funcName) '
               '-35s %(lineno) -5d: %(message)s')
@@ -392,10 +393,17 @@ class Publisher(object):
 def main():
     logging.basicConfig(level=logging.DEBUG, format=LOG_FORMAT)
 
+    def test(publish_message):
+        while True:
+            publish_message('herro!')
+            time.sleep(1)
+
     # Connect to localhost:5672 as guest with the password guest and virtual
     # host "/" (%2F)
     example = Publisher(
-        'amqp://guest:guest@localhost:5672/%2F?connection_attempts=3&heartbeat_interval=3600')
+        'amqp://guest:guest@localhost:5672/%2F?connection_attempts=3&heartbeat_interval=3600'
+    )
+    #  , publish_func=test)
     try:
         example.run()
     except KeyboardInterrupt:

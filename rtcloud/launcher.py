@@ -4,6 +4,8 @@ import nibabel
 import numpy as np
 import pika
 
+from .consumer import Consumer
+
 from brainiak.searchlight.searchlight import Searchlight, Diamond
 
 
@@ -27,7 +29,10 @@ def predict(sample, models, mask):
 
 class Launcher:
     def __init__(self, work_queue, result_queue, experiment_data=None):
-        self.rmq = pika.BlockingConnection(pika.ConnectionParameters(host='localhost'))
+        # NOTE: We used to only have one channel; now we have one for
+        # both of consumer and producer
+        self.rmq = pika.BlockingConnection(
+            pika.ConnectionParameters(host='localhost'))
         self.channel = self.rmq.channel()
         self.channel.queue_declare(queue=work_queue)
         self.channel.queue_declare(queue=result_queue)
@@ -44,11 +49,17 @@ class Launcher:
             test_display = predict(pickle.loads(body), models, mask)
             test_img = nibabel.nifti1.Nifti1Image(test_display, affine)
             self.channel.basic_publish(
-                    exchange='',
-                    routing_key=result_queue,
-                    body=pickle.dumps(test_img),
+                exchange='',
+                routing_key=result_queue,
+                body=pickle.dumps(test_img),
             )
             return
 
-        self.channel.basic_consume(callback, queue=work_queue, no_ack=True)
-        self.channel.start_consuming()
+        consumer = Consumer(
+            'amqp://guest:guest@localhost:5672/%2F',
+            routing_key=work_queue,
+            callback=callback
+        )
+        consumer.run()
+        #  self.channel.basic_consume(callback, queue=work_queue, no_ack=True)
+        #  self.channel.start_consuming()
