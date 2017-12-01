@@ -37,6 +37,9 @@ export MATLAB_ROOT=[MATLAB_ROOT]
 echo fs.inotify.max_user_watches=524288 | sudo tee -a /etc/sysctl.conf && sudo sysctl -p
 ```
 - [HPC on EC2](https://d0.awsstatic.com/Projects/P4114756/deploy-elastic-hpc-cluster_project.pdf)
+- Code coverage
+- Codacy
+- Linting
 
 ## Switching AWS regions
 - May need to use custom [AMI](https://github.com/awslabs/cfncluster/blob/master/amis.txt)
