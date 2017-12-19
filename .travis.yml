@@ -1,24 +1,20 @@
-sudo: required
-
 matrix:
-   include:
-      - os: osx
-        before_install: brew install python3
-        env: CIBW_SKIP="cp27-* cp33-*" HOMEBREW_NO_AUTO_UPDATE=1
-      - os: linux
-        dist: trusty
-        before_install:
-          - sudo apt update
-          - sudo apt install python3-pip python3.4-venv
-        env: CIBW_SKIP="cp27-* cp33-*"
-
-services:
-   - docker
-
-script:
-  - python3 -m venv venv
-  - source venv/bin/activate
-  - pip install -U pip
-  - pip install cibuildwheel==0.6.0
-  # - cibuildwheel --output-dir ./wheelhouse
-
+  include:
+  - os: linux
+    dist: trusty
+    language: python
+    python: '3.5'
+    env:
+    - TWINE_USERNAME="danielsuo"
+    - secure: YiGzkTF6YDfWRPKIxdAvZxHvkgVs1PaYwHAezw7gojvSaXRo4L4qbM0D85WtLtIdp3f+QOJuHOnDAlzWdAl6cqPutoESItDpGgl6dPAs361073XAJd2/mazYWX2W7zyTjXtg+3K2Sgt3+6BuD/+peS5C+/7l687lAjZYOaPhGhdKjbCfZmGDMgCmWDciswqaPC7eCrCSri8JlvQGkQuC/MlDdQ2dtsQZohkmk1WIqsO0F2l6zISst8pe19X57qJxjXRpycz6HfgUIvWasbFM9xncEEEHjxhMeLsvAWUU+XymGDcWQdd7xO3xJbBOSEXjED/jJORU4FThEOoUBK6Es993NL21g62E4ZjvNPbBuKYYXp1ToEMquv9LlT8JP1z2CAelnFEbZDOqtniqIZs1kLwCcUi1iIoWqhY7ZJZ4HyD4YMsRNO/jmbzWHiJwaHkT10RaxL95BZK5BlvYg/nQG9fsKABdcxOB+l/971YGVAjElIo+uZJvP3jzXi+phoURZvTG3PniXtuAweuUkufE3QOryhCKlhPMy8IFejl7UX2zMX63yrT2Hg8cPxZ83WDs8FeadSax9Rcly61fB6mIXac0PFCEViL388o9I4wO+apbifDK8dUG5NMadnT4lqYcwgLV7ye/OJqyju9Z78fmN0ZkDyKwCHnIo/DWaPYgChQ=
+    - TWINE_REPOSITORY_URL="https://test.pypi.org/legacy/"
+    install:
+    - python3 -m pip install -U pip twine
+    script:
+    - python3 -m pip install -e .
+    - python3 setup.py sdist
+    - twine upload dist/*
+    addons:
+      apt:
+        packages:
+        - build-essential libgomp1 libmpich-dev mpich
