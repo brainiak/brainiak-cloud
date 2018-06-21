@@ -13,6 +13,6 @@ for i in $(find "$1" -type f | grep "$3" | sort); do
         echo Processing $i
         filename=$(basename "$path")
         cp $i $2/$filename
-        sleep 1
+        sleep 0.4
     fi
 done
