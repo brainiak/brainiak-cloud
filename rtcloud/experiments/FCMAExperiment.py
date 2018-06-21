@@ -122,4 +122,8 @@ class FCMAExperiment(Experiment):
             self.logger.info('Experiment complete!')
             sys.exit(1)
 
-        return
+        if y_pred and len(y_pred) > 1:
+            return y_pred[0]
+        
+        return "Data received!"
+    

@@ -19,8 +19,8 @@ dependencies:
   - pybind11
   - cython
   - pika
-  - brainiak
   - pip:
+    - brainiak==0.4.0
     - flask_session
     - ipywidgets
     - jupyter_contrib_nbextensions

@@ -109,17 +109,7 @@ class Server:
             file.save(filepath)
 
             if not self.opts.get('IGNORE_EXPERIMENT'):
-                self.experiment.process(filepath)
+                return self.experiment.process(filepath), 202
 
             return 'Successfully queued!', 202
         return 'FAIL!'
-
-
-def signal_handler(signal, frame):
-    print('You pressed Ctrl-C!')
-
-    rmq_stop = ['sudo', 'rabbitmqctl', 'stop']
-    if platform.system() == 'Darwin':
-        rmq_stop = ['brew', 'services', 'stop', 'rabbitmq']
-    subprocess.call(rmq_stop)
-    sys.exit(0)
