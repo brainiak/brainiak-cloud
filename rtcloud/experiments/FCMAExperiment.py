@@ -61,7 +61,7 @@ class FCMAExperiment(Experiment):
         # TODO: fix this awfulness once we hear back on why dcm2niix is naming
         #       things oddly
         # Convert DICOM file to NIfTI
-        y_pred = 0
+        result = -1
         output = check_output(['dcm2niix', '-s', 'y', '-f', '%n_%s', filepath])
 
         for path in output.decode('ascii').split('\n'):
@@ -104,6 +104,7 @@ class FCMAExperiment(Experiment):
                 # predict, calling BrainIAK
                 y_pred = self.model.predict([data])
                 confidence = self.model.decision_function([data])
+                result = y_pred[0]
                 self.logger.info(
                             'predicted: %d with confidence %.2f, growing window, window size: %d' %
                             (y_pred[0], abs(confidence), self.tr_count + 1 - self.current_epoch)
@@ -114,17 +115,20 @@ class FCMAExperiment(Experiment):
                 # predict, calling BrainIAK
                 y_pred = self.model.predict([data])
                 confidence = self.model.decision_function([data])
+                result = y_pred[0]
                 self.logger.info(
                             'predicted: %d with confidence %.2f, sliding window, window size: %d' %
                             (y_pred[0], abs(confidence), self.windowSize)
                            )
+
         self.tr_count += 1
         if self.tr_count == self.numTRs:
             self.logger.info('Experiment complete!')
             sys.exit(1)
-
-        if y_pred and len(y_pred) > 1:
-            return y_pred[0]
-        
+            
+        # TODO: Just the worst
+        if result > -1:
+            tmp = result
+            result = -1
+            return result
         return "Data received!"
-    
