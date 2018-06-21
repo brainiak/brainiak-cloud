@@ -1,18 +1,17 @@
 {
   "experimentClass": "FCMAExperiment",
   "fixedWindow": true,
-  "epoch": "/home/ubuntu/rtfcma-prisma/data/sb_714tr.npy",
-  "mask": "/home/ubuntu/rtfcma-prisma/data/allsubs_select_seq_top2000.nii.gz",
-  "model": "/home/ubuntu/rtfcma-prisma/data/svm_all_2000.pkl",
-  "registration": "/home/ubuntu/rtfcma-prisma/data/example_func2standard.mat",
-  "template": "/home/ubuntu/rtfcma-prisma/data/canonical.nii.gz",
+  "epoch": "/home/ubuntu/strongbad/sb_714tr.npy",
+  "mask": "/home/ubuntu/strongbad/allsubs_select_seq_top2000.nii.gz",
+  "model": "/home/ubuntu/strongbad/svm_all_2000.pkl",
+  "registration": "/home/ubuntu/strongbad/example_func2standard.mat",
+  "template": "/home/ubuntu/strongbad/canonical.nii.gz",
   "windowSize": 20,
   "numTRs": 714,
   "BASE_URL": "brainiak",
   "UPLOAD_FOLDER": "/home/ubuntu/rtcloud/tmp",
-  "ALLOWED_EXTENSIONS": [
-    "dcm"
-  ],
+  "ALLOWED_EXTENSIONS": ["dcm"],
   "DEBUG": true,
-  "IGNORE_EXPERIMENT": true
+  "IGNORE_EXPERIMENT": true,
+  "PORT": 5200
 }
