@@ -5,6 +5,7 @@ setup(
     version='0.0.2',
     install_requires=[
         'click',
+        'clickutil',
         'ipython',
         'requests',
         'pathos',
@@ -35,9 +36,9 @@ setup(
     keywords='neuroscience, algorithm, fMRI, distributed, scalable',
     packages=find_packages(),
     python_requires='>=3.4',
-    entry_points='''
-        [console_scripts]
-        watch=brainiak.cloud.watcher:watch
-        serve=brainiak.cloud.server:serve
-    '''
+    scripts=[
+        'bin/client/notebook',
+        'bin/client/watch',
+        'bin/server/serve'
+    ]
 )

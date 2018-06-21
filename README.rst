@@ -6,7 +6,21 @@ BrainIAK Real-time cloud
 Getting started on client machine
 ---------------------------------
 
-First, install Docker
+First, install Conda
+(`Mac <https://conda.io/docs/user-guide/install/macos.html>`__,
+`Linux <https://conda.io/docs/user-guide/install/linux.html>`__,
+`Windows <https://conda.io/docs/user-guide/install/windows.html>`__).
+
+Navigate to the project directory and create / activate a conda environment:
+
+.. code:: bash
+
+   conda env create -f environment.yml
+   source activate rtcloud
+   pip install . --verbose
+   notebook
+
+If you prefer, you can use Docker instead of Conda
 (`Mac <https://store.docker.com/editions/community/docker-ce-desktop-mac>`__,
 `Linux <https://store.docker.com/editions/community/docker-ce-server-ubuntu>`__,
 `Windows <https://store.docker.com/editions/community/docker-ce-desktop-windows>`__).
@@ -16,8 +30,8 @@ Then, run
 
     # Sudo may be necessary
     docker pull brainiak/rtcloud
-    docker run -it -p 8888:8888 brainiak/rtcloud
-    ./bin/client/notebook
+    docker run -it -p 9898:9898 brainiak/rtcloud
+    notebook
 
 Getting started on server machine (Ubuntu 16.04)
 ------------------------------------------------

@@ -1,3 +1,5 @@
+#!/usr/bin/env python
+
 import click
 import requests
 
@@ -22,7 +24,7 @@ class Handler(FileSystemEventHandler):
 
 @click.command(context_settings=dict(help_option_names=["-h", "--help"]))
 @click.option('-i', '--input-directory', default='.', help='Input directory to watch')
-@click.option('-o', '--output-url', help='Output url to upload to')
+@click.option('-o', '--output-url', required=True, help='Output url to upload to')
 def watch(input_directory, output_url):
     """File watcher/uploader"""
 
@@ -38,3 +40,6 @@ def watch(input_directory, output_url):
 
     observer.join()
 
+
+if __name__ == '__main__':
+    watch()

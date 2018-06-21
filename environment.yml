@@ -1,0 +1,30 @@
+name: rtcloud
+channels:
+  - brainiak
+  - conda-forge
+  - default
+dependencies:
+  - click
+  - ipython
+  - requests
+  - pathos
+  - tqdm
+  - watchdog
+  - flask
+  - matplotlib
+  - pandas
+  - nilearn
+  - numpy
+  - scipy==0.19.1
+  - pybind11
+  - cython
+  - pika
+  - brainiak
+  - pip:
+    - flask_session
+    - ipywidgets
+    - jupyter_contrib_nbextensions
+    - jupyter
+    - binaryornot
+    - cfncluster
+    - clickutil

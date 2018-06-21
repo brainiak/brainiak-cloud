@@ -1,12 +1,9 @@
 import os
 import pickle
 import sys
-import json
-import signal
 import subprocess
 import platform
 
-import click
 from pathos.helpers import mp
 
 from werkzeug.utils import secure_filename
@@ -126,23 +123,3 @@ def signal_handler(signal, frame):
         rmq_stop = ['brew', 'services', 'stop', 'rabbitmq']
     subprocess.call(rmq_stop)
     sys.exit(0)
-
-
-@click.command(context_settings=dict(help_option_names=["-h", "--help"]))
-@click.argument('conf')
-def serve(conf):
-    opts = {}
-    with open(conf) as json_data:
-        # TODO: Error handling
-        # TODO: Check schema and print usage if wrong
-        opts = json.load(json_data)
-
-    signal.signal(signal.SIGINT, signal_handler)
-
-    # Assume rabbitmq-server is installed
-    rmq = ['sudo', 'service', 'rabbitmq-server', 'start']
-    if platform.system() == 'Darwin':
-        rmq = ['brew', 'services', 'start', 'rabbitmq']
-
-    subprocess.Popen(rmq)
-    server = Server(opts)
