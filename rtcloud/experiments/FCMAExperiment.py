@@ -130,5 +130,5 @@ class FCMAExperiment(Experiment):
         if result > -1:
             tmp = result
             result = -1
-            return result
+            return str(result)
         return "Data received!"
