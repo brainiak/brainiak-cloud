@@ -5,10 +5,10 @@ if [[ $# -lt 2 ]]; then
   exit 1
 fi
 
+rm -rf $2
 mkdir -p $2
 
 for i in $(find "$1" -type f | grep "$3" | sort); do
-    echo $i
     if [[ $i = *"$3"* ]]; then
         echo Processing $i
         filename=$(basename "$path")
