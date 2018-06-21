@@ -12,6 +12,6 @@
   "UPLOAD_FOLDER": "/home/ubuntu/rtcloud/tmp",
   "ALLOWED_EXTENSIONS": ["dcm"],
   "DEBUG": true,
-  "IGNORE_EXPERIMENT": true,
+  "IGNORE_EXPERIMENT": false,
   "PORT": 5200
 }

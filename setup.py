@@ -39,6 +39,7 @@ setup(
     scripts=[
         'bin/client/notebook',
         'bin/client/watch',
-        'bin/server/serve'
+        'bin/server/serve',
+        'bin/client/copy'
     ]
 )

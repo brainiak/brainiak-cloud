@@ -34,7 +34,7 @@ this returns a confidence value which is updated at each time point (using FCMA 
 ## Installation
 The install script has been tested on a fresh Ubuntu 16.04 LTS instance.
 ```bash
-./bin/server/install_deps
+./bin/server/FCMAExperiment/install_deps
 source ~/.bashrc
 ```
 
