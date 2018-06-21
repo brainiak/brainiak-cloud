@@ -90,6 +90,7 @@ class FCMAExperiment(Experiment):
         self.raw_data[self.tr_count, :] = np.copy(data[self.mask > 0])
 
         # Compute correlation if needed
+        self.logger.fino('TR: %d, Epoch: %d, Curr: %d' % (self.tr_count, self.epoch, self.current_epoch))
         if self.current_epoch == -1:
             if self.epoch[self.tr_count] == 1:
                 self.current_epoch = self.tr_count
