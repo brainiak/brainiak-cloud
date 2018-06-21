@@ -61,6 +61,7 @@ class FCMAExperiment(Experiment):
         # TODO: fix this awfulness once we hear back on why dcm2niix is naming
         #       things oddly
         # Convert DICOM file to NIfTI
+        y_pred = 0
         output = check_output(['dcm2niix', '-s', 'y', '-f', '%n_%s', filepath])
 
         for path in output.decode('ascii').split('\n'):

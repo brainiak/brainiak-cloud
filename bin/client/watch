@@ -16,17 +16,18 @@ class Handler(FileSystemEventHandler):
         self.output_url = output_url
 
     def on_created(self, event):
-        if type(event) is watchdog.events.FileCreatedEvent:
-          req = requests.post(self.output_url, files={
-              'file': open(event.src_path, 'rb')
-              })
+        if isinstance(event, watchdog.events.FileCreatedEvent):
+            req = requests.post(
+                self.output_url, files={'file': open(event.src_path, 'rb')})
 
-          print(req.text)
+            print(req.text)
 
 
 @click.command(context_settings=dict(help_option_names=["-h", "--help"]))
-@click.option('-i', '--input-directory', default='.', help='Input directory to watch')
-@click.option('-o', '--output-url', required=True, help='Output url to upload to')
+@click.option(
+    '-i', '--input-directory', default='.', help='Input directory to watch')
+@click.option(
+    '-o', '--output-url', required=True, help='Output url to upload to')
 def watch(input_directory, output_url):
     """File watcher/uploader"""
 
