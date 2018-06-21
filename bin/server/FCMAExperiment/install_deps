@@ -24,6 +24,8 @@ wget https://repo.continuum.io/archive/Anaconda3-4.3.0-Linux-x86_64.sh
 bash Anaconda3-4.3.0-Linux-x86_64.sh -b
 echo "export PATH=$HOME/anaconda3/bin:\$PATH" >> ~/.bashrc
 
+source ~/.bashrc
+
 export ACCEPT_INTEL_PYTHON_EULA=yes
 conda update conda -y
 conda config --add channels intel

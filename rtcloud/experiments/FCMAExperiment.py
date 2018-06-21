@@ -61,8 +61,12 @@ class FCMAExperiment(Experiment):
         #       things oddly
         # Convert DICOM file to NIfTI
         output = check_output(['dcm2niix', '-s', 'y', '-f', '%n_%s', filepath])
+
+        self.logger.info(output)
         raw_nii_path = output.decode('ascii').split('\n')[1]
+        self.logger.info(raw_nii_path)
         raw_nii_path = raw_nii_path[raw_nii_path.find('/'):raw_nii_path.find('(')].strip() + '.nii'
+        self.logger.info(raw_nii_path)
 
         tmp_path = raw_nii_path.replace('.nii', '_%d.nii' % (self.tr_count + 1))
         output = check_output(['mv', raw_nii_path, tmp_path])
