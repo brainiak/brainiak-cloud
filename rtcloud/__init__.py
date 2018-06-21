@@ -6,7 +6,7 @@ A work in progress. More documentation to come.
 
 from .server import Server
 from .client import Client
-from .launcher import Launcher
+# from .launcher import Launcher
 from .publisher import Publisher
 from .consumer import Consumer
 
@@ -18,7 +18,7 @@ from .ui import (
 from .experiments import (
     Experiment,
     FCMAExperiment,
-    SearchlightExperiment
+#   SearchlightExperiment
 )
 
 from .utils import (
@@ -29,7 +29,7 @@ from .utils import (
 __all__ = [
     'Server',
     'Client',
-    'Launcher',
+#   'Launcher',
     'Publisher',
     'Consumer',
 
