@@ -19,7 +19,7 @@ setup(
         'pandas',
         'nilearn',
         'numpy',
-        'scipy==0.19.1',  # See https://github.com/scipy/scipy/pull/8082
+        'scipy==1.10.0',  # See https://github.com/scipy/scipy/pull/8082
         'pybind11',
         'cython',
         'pika',
